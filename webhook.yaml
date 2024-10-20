@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-annotate-webhook
+  labels:
+    app: pod-annotate-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-annotate-webhook
+  template:
+    metadata:
+      labels:
+        app: pod-annotate-webhook
+    spec:
+      containers:
+        - name: pod-annotate-webhook
+          image: wcrum/webhook:latest
+          imagePullPolicy: Always
+          env:
+          - name: TLS_CERT_FILE
+            value: /etc/webhook/tls.crt
+          - name: TLS_KEY_FILE
+            value: /etc/webhook/tls.key
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook
+              readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: example-com-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pod-annotate-webhook
+  labels:
+    app: pod-annotate-webhook
+spec:
+  ports:
+  - port: 443
+    targetPort: 8080
+  selector:
+    app: pod-annotate-webhook

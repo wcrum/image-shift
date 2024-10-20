@@ -1,0 +1,17 @@
+imageswap:
+  default: my-container-registry.com
+
+  mappings:
+  - registry: gcr.io
+    action: ignore
+
+  - registry: test.com
+    action: swap
+    target: google.com
+
+  tests:
+    - test/test:latest
+    - gcr.io/test/test:latest
+    - test.com/library/test/test:latest
+    - test.com/library/test/test
+    - test.com/library/test/test@sha256:12a6507d43bd9129fd1632ef4d1b8a778dfa3865ac5aeffbb412710f48aeb494

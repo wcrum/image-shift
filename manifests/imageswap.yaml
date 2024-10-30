@@ -10,3 +10,6 @@ data:
       - registry: gcr.io
         action: swap
         target: repo1.cloudpnw.local:8080/my-base-content
+      - registry: quay.io
+        action: swap
+        target: repo1.cloudpnw.local:8080/my-base-content

@@ -11,9 +11,9 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 
 	"github.com/sirupsen/logrus"
+
 	kwhhttp "github.com/slok/kubewebhook/v2/pkg/http"
 	kwhlogrus "github.com/slok/kubewebhook/v2/pkg/log/logrus"
-	"github.com/slok/kubewebhook/v2/pkg/model"
 	kwhmodel "github.com/slok/kubewebhook/v2/pkg/model"
 	kwhmutating "github.com/slok/kubewebhook/v2/pkg/webhook/mutating"
 )
@@ -32,12 +32,24 @@ func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.Admissi
 	// gcr.io::myregistry.com
 	// credentials::--> credentials
 
-	for _, container := range pod.Spec.Containers {
-		fmt.Println(container.Image)
+	for i, container := range pod.Spec.Containers {
+		img := cfg.ImageSwap.SwapImage(container.Image)
+
+		if img != "" {
+			pod.Spec.Containers[i].Image = img
+			logrus.Infof("Patched %s with %s", container.Image, img)
+		}
 	}
 
-	for _, container := range pod.Spec.InitContainers {
-		fmt.Println(container.Image)
+	for i, container := range pod.Spec.InitContainers {
+		img := cfg.ImageSwap.SwapImage(container.Image)
+
+		if img != "" {
+			pod.Spec.InitContainers[i].Image = img
+			logrus.Infof("Patched %s with %s", container.Image, img)
+		}
+
+		logrus.Infof("%s --> %s", container.Image, img)
 	}
 
 	if pod.Annotations == nil {
@@ -97,7 +109,7 @@ func main() {
 	fmt.Println(imageSwapCfg)
 
 	// Create our mutator
-	mt := kwhmutating.MutatorFunc(func(ctx context.Context, ar *model.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
+	mt := kwhmutating.MutatorFunc(func(ctx context.Context, ar *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
 		return swapPodMutator(imageSwapCfg, ctx, ar, obj)
 	})
 

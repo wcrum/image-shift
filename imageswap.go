@@ -6,8 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	_ "crypto/tls/fipsonly"
-
 	"github.com/google/go-containerregistry/pkg/name"
 	log "github.com/sirupsen/logrus"
 )

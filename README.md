@@ -1,4 +1,4 @@
-# Imageswap Webhook
+# ImageShift Webhook
 
 ![meme](./imageswap-meme.jpg)
 
@@ -12,7 +12,13 @@ There are solutions for this problem. These solutions are un-maintained, have we
 
 This repository fixes all of that.
 
-## Imageswap Configuration
+## ImageShift Architecture
+
+ImageShift is a Kubernetes MutatingWebhook, the MutatingWebhook patches requests to / from the kube-apiserver. Based on your configuration, ImageShift will patch the image requested with whatever you have configured. 
+
+What this means for you? Dont change your manifests, helm charts or refernces, keep them the same across the board. As you move your images from one domain to another, you dont have to worry about the manifests.
+
+![arch](./image.png)
 
 
 ## Stuff to do

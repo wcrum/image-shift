@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: example-com
-  namespace: trust
+  namespace: sandbox
 spec:
   # Secret names are always required.
   secretName: example-com-tls

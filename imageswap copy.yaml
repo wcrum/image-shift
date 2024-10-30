@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: imageswap-config
+data:
+  imageswap:
+    default: repo1.cloudpnw.local:8080/my-base-content
+
+    mappings:
+
+    - registry: gcr.io
+      action: swap
+      target: repo1.cloudpnw.com/my-base-content
+
+    #- registry: test\.com\/my-custom-([a-zA-Z]*)
+    # action: regex-swap
+    # target: google.com/proxy-$1
+
+      # test.com/my-custom-repo/test/images:latest -> google.com/proxy/test/images
+    
+    # exact swap overrides default
+    # so in this case even if default is set
+    # [exact-swap] test\image:latest -> test.com\test\image:1.0.0 = test.com\test\image:1.0.0
+    #- action: exact-swap
+    #  image: my-custom-image/image:latest
+    #  target: test.com/my-custom-image/image:v1.0.0
+    #  options: ignore-default
+
+    tests:
+      # - my-custom-image/image:latest
+      - gcr.io/test/test:latest
+      - test/images:latest
+      # - test.com/library/test/test:latest
+      # - test.com/library/test/test
+      # - test.com/library/test/test@sha256:12a6507d43bd9129fd1632ef4d1b8a778dfa3865ac5aeffbb412710f48aeb494

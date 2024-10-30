@@ -1,0 +1,139 @@
+# Standard images with common tags
+nginx:latest
+nginx:1.23
+nginx:alpine
+ubuntu:latest
+ubuntu:22.04
+ubuntu:rolling
+redis:latest
+redis:6
+redis:alpine
+python:3.9
+python:3.9-slim
+node:18
+node:18-alpine
+node:lts
+
+# Images with specific registries
+quay.io/prometheus/prometheus:v2.40.0
+gcr.io/google-samples/hello-app:1.0
+registry.gitlab.com/my-group/my-project:latest
+docker.io/library/mysql:8.0
+ghcr.io/owner/image:tag
+
+# Images with longer repository names
+my-registry.local/my-long-image-name:latest
+my-company/internal-project/webservice:v1.2.3
+example.com/organization/team/application:latest
+
+# Images with different tag formats
+app:v1
+app:v1.0
+app:1.0.0
+app:1.0-beta
+app:latest-stable
+app:prod-20241021
+app:feature-xyz
+
+# Images with digests
+nginx@sha256:49ea1320e60085d107eeedbc03ecf61ff56646e28bd613cf100d5aeaee53d172
+ubuntu@sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+busybox@sha256:c75bebcdd211f41b3a460c7bf82970ed6c75acaab9bb86aa891fddc874951234
+
+# Images with mixed case and hyphens
+MyImage:Latest
+my-app:v1.0
+my-app-server:latest
+My-Project/My-Image:Tag
+
+# Images with numbers in repository name
+app1:latest
+app2:v1
+123-app:latest
+
+# Images with special characters in tag
+app:v1.0.0-alpha+001
+app:build-20241021_1000
+app:feature_x.y.z
+
+# Images with multiple tags
+app:latest,stable
+app:v1,v1.0
+
+# Images with long tags
+app:this-is-a-very-long-tag-to-test-the-limits-of-the-system
+app:another-long-tag-with-lots-of-characters-and-information
+
+# Images with underscores in repository name
+my_app_server:latest
+my_image_name:v1
+
+# Images with no tag
+nginx
+ubuntu
+redis
+
+# Edge cases
+:latest # Only tag
+library/:latest # Only registry and tag
+/:latest # Only slash and tag
+: # Only colon
+/ # Only slash
+ 
+# More variations with different combinations
+busybox:glibc
+golang:1.18-buster
+postgres:14-alpine
+rabbitmq:3.11-management
+memcached:1.6-alpine
+httpd:2.4
+jenkins/jenkins:lts
+grafana/grafana:latest
+elasticsearch:8.8.0
+kibana:8.8.0
+traefik:v2.9
+portainer/portainer-ce:latest
+vault:1.12.0
+consul:1.14.0
+kong:3.0
+nats:2.8.4
+influxdb:2.6
+mongodb:6.0
+mariadb:10.11
+clickhouse/clickhouse-server:latest
+flink:1.16.1
+neo4j:5.5
+rabbitmq:3.11-management-alpine
+aerospike:ce-6.0.0.8
+couchbase:7.1.2
+cassandra:4.0.7
+confluentinc/cp-kafka:7.3.1
+bitnami/kafka:3.3.1
+eclipse-temurin:17-jdk-alpine
+openjdk:11-jre-slim
+amazoncorretto:17
+adoptopenjdk/openjdk11:alpine-jre
+ibmjava:8-jre-alpine
+
+# More examples with quay.io
+quay.io/coreos/etcd:v3.5.5
+quay.io/calico/node:v3.24.1
+quay.io/keycloak/keycloak:latest
+quay.io/metallb/speaker:v0.13.1
+quay.io/jetstack/cert-manager:v1.10.1
+
+# More examples with gcr.io
+gcr.io/distroless/base:latest
+gcr.io/distroless/static:nonroot
+gcr.io/cloud-builders/docker:latest
+gcr.io/google-containers/pause:3.8
+
+# More examples with registry.gitlab.com
+registry.gitlab.com/gitlab-org/gitlab-runner:alpine
+registry.gitlab.com/gitlab-org/gitlab-ce:latest
+registry.gitlab.com/gitlab-org/buildpack-deps:alpine-curl
+
+# More examples with docker.io
+docker.io/library/postgres:15
+docker.io/library/redis:7
+docker.io/library/mongo:latest

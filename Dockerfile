@@ -1,4 +1,4 @@
-FROM golang:1.23 as golang
+FROM cgr.dev/chainguard/go AS golang
 
 WORKDIR /app
 
@@ -6,11 +6,11 @@ COPY . .
 
 RUN go mod download && go mod verify
 
-RUN CGO_ENABLED=0 go build -v -o main
+RUN GOEXPERIMENT=boringcrypto CGO_ENABLED=0 go build -v -o main
 
 RUN ls
 
-FROM alpine
+FROM alpine:latest
 
 COPY --from=golang /app/main .
 

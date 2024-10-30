@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
+	_ "crypto/tls/fipsonly"
+
 	"github.com/google/go-containerregistry/pkg/name"
 	log "github.com/sirupsen/logrus"
-	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
 // Define the structure of the imageswap configuration
@@ -88,23 +88,4 @@ func (i *ImageSwap) SwapImage(image string) string {
 	}
 
 	return newImage
-}
-
-func main() {
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
-	var config ImageSwapConfig
-
-	path := "imageswap.yaml"
-
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return
-	}
-
-	err = yaml.Unmarshal(content, &config)
-
-	for _, image := range config.ImageSwap.Tests {
-		fmt.Printf("%s -> %s\n", image, config.ImageSwap.SwapImage(image))
-	}
 }

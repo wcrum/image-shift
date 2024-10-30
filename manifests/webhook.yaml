@@ -27,10 +27,16 @@ spec:
             - name: webhook-certs
               mountPath: /etc/webhook
               readOnly: true
+            - name: imageswap-config
+              mountPath: /etc/imageswap-config
+              readOnly: true
       volumes:
         - name: webhook-certs
           secret:
             secretName: example-com-tls
+        - name: imageswap-config
+          configMap:
+            name: imageswap-config
 ---
 apiVersion: v1
 kind: Service

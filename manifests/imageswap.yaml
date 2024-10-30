@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: imageswap-config
+data:
+  imageswap.yaml: |
+    imageswap:
+      default: repo1.cloudpnw.local:8080/my-base-content
+      mappings:
+      - registry: gcr.io
+        action: swap
+        target: repo1.cloudpnw.local:8080/my-base-content

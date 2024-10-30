@@ -8,15 +8,17 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/yaml"
 
 	"github.com/sirupsen/logrus"
 	kwhhttp "github.com/slok/kubewebhook/v2/pkg/http"
 	kwhlogrus "github.com/slok/kubewebhook/v2/pkg/log/logrus"
+	"github.com/slok/kubewebhook/v2/pkg/model"
 	kwhmodel "github.com/slok/kubewebhook/v2/pkg/model"
 	kwhmutating "github.com/slok/kubewebhook/v2/pkg/webhook/mutating"
 )
 
-func annotatePodMutator(_ context.Context, _ *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
+func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
 	pod, ok := obj.(*corev1.Pod)
 	if !ok {
 		// If not a pod just continue the mutation chain(if there is one) and don't do nothing.
@@ -69,16 +71,35 @@ func initEnv() *config {
 	return cfg
 }
 
-func main() {
+func initConfig() *ImageSwapConfig {
+	// default location will be /etc/imageswap-config/imageswap.yaml
+	imageSwapFilePath := "/etc/imageswap-config/imageswap.yaml"
+	cfg := &ImageSwapConfig{}
 
+	content, err := os.ReadFile(imageSwapFilePath)
+	if err != nil {
+	}
+
+	err = yaml.Unmarshal(content, cfg)
+
+	return cfg
+}
+
+func main() {
 	logrusLogEntry := logrus.NewEntry(logrus.New())
 	logrusLogEntry.Logger.SetLevel(logrus.DebugLevel)
 	logger := kwhlogrus.NewLogrus(logrusLogEntry)
 
 	cfg := initEnv()
 
+	imageSwapCfg := initConfig()
+
+	fmt.Println(imageSwapCfg)
+
 	// Create our mutator
-	mt := kwhmutating.MutatorFunc(annotatePodMutator)
+	mt := kwhmutating.MutatorFunc(func(ctx context.Context, ar *model.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
+		return swapPodMutator(imageSwapCfg, ctx, ar, obj)
+	})
 
 	mcfg := kwhmutating.WebhookConfig{
 		ID:      "podAnnotate",

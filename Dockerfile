@@ -6,9 +6,7 @@ COPY . .
 
 RUN go mod download && go mod verify
 
-RUN GOEXPERIMENT=boringcrypto CGO_ENABLED=0 go build -v -o main
-
-RUN ls
+RUN GOEXPERIMENT=boringcrypto CGO_ENABLED=0 go build -v -o main -ldflags="-s -w"
 
 FROM alpine:latest
 

@@ -23,6 +23,9 @@ What this means for you? Dont change your manifests, helm charts or refernces, k
 
 ## Stuff to do
 
-- [] Init container patch of mutating webhook
-- [] Go lang tests
-- [] Helm charts
+- [ ] Init container patch of mutating webhook
+    - I kind further did this, need to modify args and such
+- [ ] Go lang tests
+- [ ] Helm charts
+- [ ] Should I utilize UPX to further compress binary?
+

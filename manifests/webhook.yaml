@@ -14,13 +14,27 @@ spec:
       labels:
         app: pod-annotate-webhook
     spec:
+      serviceAccountName: imageshift-init-sa
       initContainers:
-      - name: init-myservice
-        image: busybox:1.28
-        command: ['sh', '-c', 'kubectl get pods -A;']
-      containers:
-        - name: pod-annotate-webhook
+        - name: imageshift-init
           image: wcrum/webhook:latest
+          command: ["./main"]
+          args: ["init"]
+          imagePullPolicy: Always
+          env:
+          - name: TLS_CERT_FILE
+            value: /etc/webhook/tls.crt
+          - name: TLS_KEY_FILE
+            value: /etc/webhook/tls.key
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook
+              readOnly: true
+      containers:
+        - name: imageshift-webhook
+          image: wcrum/webhook:latest
+          command: ["./main"]
+          args: ["webhook"]
           imagePullPolicy: Always
           env:
           - name: TLS_CERT_FILE

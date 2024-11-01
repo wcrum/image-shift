@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"github.com/sirupsen/logrus"
 
@@ -18,7 +21,47 @@ import (
 )
 
 func injectCertInMWC() {
-	fmt.Println("Not implemented.")
+	// creates the in-cluster config
+
+	certFile := os.Getenv("TLS_CERT_FILE")
+
+	fmt.Printf("Injecting Certificate!")
+
+	crt, err := os.ReadFile(certFile)
+	if err != nil {
+		panic(err)
+	}
+
+	certEnc := base64.StdEncoding.EncodeToString([]byte(crt))
+	fmt.Println(certEnc)
+
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err)
+	}
+	// creates the clientset
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err)
+	}
+
+	mwc, err := clientset.AdmissionregistrationV1().MutatingWebhookConfigurations().Get(context.TODO(), "imageshift-webhook", metav1.GetOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for i := range mwc.Webhooks {
+		fmt.Println(i)
+		mwc.Webhooks[i].ClientConfig.CABundle = []byte(crt)
+	}
+
+	_, err = clientset.AdmissionregistrationV1().MutatingWebhookConfigurations().Update(context.TODO(), mwc, metav1.UpdateOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Completed!")
+
 }
 
 func startWebhook() {
@@ -66,6 +109,8 @@ func main() {
 		fmt.Println("No arguments provided.")
 		return
 	}
+
+	fmt.Println(os.Args)
 
 	// checking for app [init | webhook]
 	// init mode injects certificate into the mutating webhook

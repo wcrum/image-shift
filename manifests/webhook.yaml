@@ -14,6 +14,10 @@ spec:
       labels:
         app: pod-annotate-webhook
     spec:
+      initContainers:
+      - name: init-myservice
+        image: busybox:1.28
+        command: ['sh', '-c', 'kubectl get pods -A;']
       containers:
         - name: pod-annotate-webhook
           image: wcrum/webhook:latest

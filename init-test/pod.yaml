@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-containers
+  namespace: sandbox
+  labels:
+    app: test-containers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-containers
+  template:
+    metadata:
+      labels:
+        app: test-containers
+    spec:
+      serviceAccountName: imageshift-init-sa
+      containers:
+      - name: test
+        image: wcrum/init
+        imagePullPolicy: Always
+        env:
+        - name: TLS_CERT_FILE
+          value: /etc/webhook/tls.crt
+        - name: TLS_KEY_FILE
+          value: /etc/webhook/tls.key
+        volumeMounts:
+          - name: webhook-certs
+            mountPath: /etc/webhook
+            readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: example-com-tls

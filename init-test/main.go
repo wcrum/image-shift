@@ -19,6 +19,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -39,25 +40,40 @@ func main() {
 
 	certFile := os.Getenv("TLS_CERT_FILE")
 
+	fmt.Printf("Injecting Certificate!")
+
+	crt, err := os.ReadFile(certFile)
+	if err != nil {
+		panic(err)
+	}
+
+	certEnc := base64.StdEncoding.EncodeToString([]byte(crt))
+	fmt.Println(certEnc)
+
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	// creates the clientset
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 
 	mwc, err := clientset.AdmissionregistrationV1().MutatingWebhookConfigurations().Get(context.TODO(), "imageshift-webhook", metav1.GetOptions{})
-	fmt.Println(err)
-	fmt.Println(mwc)
-	for i, _ := range mwc.Webhooks {
-		fmt.Println(i)
-		mwc.Webhooks[i].ClientConfig.CABundle = []byte(certFile)
+	if err != nil {
+		panic(err)
 	}
 
-	fmt.Println(mwc)
+	for i := range mwc.Webhooks {
+		fmt.Println(i)
+		mwc.Webhooks[i].ClientConfig.CABundle = []byte(crt)
+	}
 
-	select {}
+	_, err = clientset.AdmissionregistrationV1().MutatingWebhookConfigurations().Update(context.TODO(), mwc, metav1.UpdateOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Completed!")
 }

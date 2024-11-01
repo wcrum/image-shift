@@ -1,6 +1,6 @@
 # ImageShift Webhook
 
-![meme](./imageswap-meme.jpg)
+![meme](./images/imageswap-meme.jpg)
 
 [![Docker Image Size](https://badgen.net/docker/size/wcrum/webhook/latest/arm64?icon=docker&label=Image%20Size)](https://hub.docker.com/r/wcrum/webhook/)
 
@@ -18,7 +18,7 @@ ImageShift is a Kubernetes MutatingWebhook, the MutatingWebhook patches requests
 
 What this means for you? Dont change your manifests, helm charts or refernces, keep them the same across the board. As you move your images from one domain to another, you dont have to worry about the manifests.
 
-![arch](./image.png)
+![arch](./images/image.png)
 
 
 ## Stuff to do

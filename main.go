@@ -8,7 +8,6 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/yaml"
 
 	"github.com/sirupsen/logrus"
 
@@ -18,86 +17,11 @@ import (
 	kwhmutating "github.com/slok/kubewebhook/v2/pkg/webhook/mutating"
 )
 
-func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
-	pod, ok := obj.(*corev1.Pod)
-	if !ok {
-		// If not a pod just continue the mutation chain(if there is one) and don't do nothing.
-		return &kwhmutating.MutatorResult{}, nil
-	}
-
-	// Mutate our object with the required annotations.
-
-	// need to get current image
-
-	// gcr.io::myregistry.com
-	// credentials::--> credentials
-
-	for i, container := range pod.Spec.Containers {
-		img := cfg.ImageSwap.SwapImage(container.Image)
-
-		if img != "" {
-			pod.Spec.Containers[i].Image = img
-			logrus.Infof("Patched %s with %s", container.Image, img)
-		}
-	}
-
-	for i, container := range pod.Spec.InitContainers {
-		img := cfg.ImageSwap.SwapImage(container.Image)
-
-		if img != "" {
-			pod.Spec.InitContainers[i].Image = img
-			logrus.Infof("Patched %s with %s", container.Image, img)
-		}
-
-		logrus.Infof("%s --> %s", container.Image, img)
-	}
-
-	if pod.Annotations == nil {
-		pod.Annotations = make(map[string]string)
-	}
-
-	pod.Annotations["mutated"] = "true"
-	pod.Annotations["mutator"] = "pod-annotate"
-
-	return &kwhmutating.MutatorResult{
-		MutatedObject: pod,
-	}, nil
+func injectCertInMWC() {
+	fmt.Println("Not implemented.")
 }
 
-type config struct {
-	certFile string
-	keyFile  string
-}
-
-func initEnv() *config {
-	cfg := &config{}
-
-	if certFile := os.Getenv("TLS_CERT_FILE"); certFile != "" {
-		cfg.certFile = certFile
-	}
-
-	if keyFile := os.Getenv("TLS_KEY_FILE"); keyFile != "" {
-		cfg.keyFile = keyFile
-	}
-
-	return cfg
-}
-
-func initConfig() *ImageSwapConfig {
-	// default location will be /etc/imageswap-config/imageswap.yaml
-	imageSwapFilePath := "/etc/imageswap-config/imageswap.yaml"
-	cfg := &ImageSwapConfig{}
-
-	content, err := os.ReadFile(imageSwapFilePath)
-	if err != nil {
-	}
-
-	err = yaml.Unmarshal(content, cfg)
-
-	return cfg
-}
-
-func main() {
+func startWebhook() {
 	logrusLogEntry := logrus.NewEntry(logrus.New())
 	logrusLogEntry.Logger.SetLevel(logrus.DebugLevel)
 	logger := kwhlogrus.NewLogrus(logrusLogEntry)
@@ -135,5 +59,24 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error serving webhook: %s", err)
 	}
+}
 
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("No arguments provided.")
+		return
+	}
+
+	// checking for app [init | webhook]
+	// init mode injects certificate into the mutating webhook
+	// webhook mode starts standarad webhook process
+
+	// better way to do this? trying to minimalize dependcies.
+
+	switch os.Args[1] {
+	case "init":
+		injectCertInMWC()
+	case "webhook":
+		startWebhook()
+	}
 }

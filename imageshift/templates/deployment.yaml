@@ -17,10 +17,10 @@ spec:
       serviceAccountName: imageshift-init-sa
       initContainers:
         - name: imageshift-init
-          image: wcrum/webhook:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["./main"]
           args: ["init"]
-          imagePullPolicy: Always
           env:
           - name: TLS_CERT_FILE
             value: /etc/webhook/tls.crt
@@ -32,10 +32,10 @@ spec:
               readOnly: true
       containers:
         - name: imageshift-webhook
-          image: wcrum/webhook:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["./main"]
           args: ["webhook"]
-          imagePullPolicy: Always
           env:
           - name: TLS_CERT_FILE
             value: /etc/webhook/tls.crt
@@ -55,16 +55,3 @@ spec:
         - name: imageswap-config
           configMap:
             name: imageswap-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: imageshift-webhook
-  labels:
-    app: imageshift-webhook
-spec:
-  ports:
-  - port: 443
-    targetPort: 8080
-  selector:
-    app: imageshift-webhook

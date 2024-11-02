@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	kwhmodel "github.com/slok/kubewebhook/v2/pkg/model"
@@ -16,6 +17,8 @@ func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.Admissi
 		// If not a pod just continue the mutation chain(if there is one) and don't do nothing.
 		return &kwhmutating.MutatorResult{}, nil
 	}
+
+	fmt.Println(pod)
 
 	// Mutate our object with the required annotations.
 
@@ -43,13 +46,6 @@ func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.Admissi
 
 		logrus.Infof("%s --> %s", container.Image, img)
 	}
-
-	if pod.Annotations == nil {
-		pod.Annotations = make(map[string]string)
-	}
-
-	pod.Annotations["mutated"] = "true"
-	pod.Annotations["mutator"] = "pod-annotate"
 
 	return &kwhmutating.MutatorResult{
 		MutatedObject: pod,

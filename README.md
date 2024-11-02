@@ -28,4 +28,4 @@ What this means for you? Dont change your manifests, helm charts or refernces, k
 - [ ] Go lang tests
 - [ ] Helm charts
 - [ ] Should I utilize UPX to further compress binary?
-
+- [ ] Should imageshift inject secrets that dont exist?

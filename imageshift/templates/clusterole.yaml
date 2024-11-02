@@ -1,0 +1,7 @@
+kind: ClusterRole
+metadata:
+  name: imageshift-init-mwc-role
+rules:
+- apiGroups: ["admissionregistration.k8s.io", ""]
+  resources: ["mutatingwebhookconfigurations"]
+  verbs: ["get", "create", "update", "patch", "delete", "list"] 

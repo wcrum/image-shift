@@ -104,6 +104,11 @@ func startWebhook() {
 	}
 }
 
+func verifyConnection() {
+	// test connection to registry is stable
+	// chose fastest repository maybe?
+
+}
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("No arguments provided.")
@@ -123,5 +128,7 @@ func main() {
 		injectCertInMWC()
 	case "webhook":
 		startWebhook()
+	case "testing":
+		verifyConnection()
 	}
 }

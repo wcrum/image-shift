@@ -1,0 +1,17 @@
+# Default values for imageshift.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: wcrum/imageshift
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: "imageshift"

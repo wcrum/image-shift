@@ -73,7 +73,7 @@ spec:
 
   # At least one of commonName (possibly through literalSubject), dnsNames, uris, emailAddresses, ipAddresses or otherNames is required.
   dnsNames:
-    - imageshift-webhook.wcrum.dev
+    - imageshift-webhook.sandbox.svc
   uris:
     - spiffe://cluster.local/ns/sandbox/sa/example
   emailAddresses:

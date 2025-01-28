@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageshift-webhook
+  namespace: {{.Values.namespace}}
+  labels:
+    app: imageshift-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imageshift-webhook
+  template:
+    metadata:
+      labels:
+        app: imageshift-webhook
+    spec:
+      serviceAccountName: imageshift-init-sa
+      initContainers:
+        - name: imageshift-init
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          command: ["./main"]
+          args: ["init"]
+          imagePullPolicy: Always
+          env:
+          - name: TLS_CERT_FILE
+            value: /etc/webhook/tls.crt
+          - name: TLS_KEY_FILE
+            value: /etc/webhook/tls.key
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook
+              readOnly: true
+      containers:
+        - name: imageshift-webhook
+          image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          command: ["./main"]
+          args: ["webhook"]
+          imagePullPolicy: Always
+          env:
+          - name: TLS_CERT_FILE
+            value: /etc/webhook/tls.crt
+          - name: TLS_KEY_FILE
+            value: /etc/webhook/tls.key
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook
+              readOnly: true
+            - name: imageswap-configmap
+              mountPath: /etc/imageswap-configmap
+              readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+        - name: imageswap-configmap
+          configMap:
+            name: {{ .Release.Name }}-configmap

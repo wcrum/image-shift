@@ -18,7 +18,7 @@ func swapPodMutator(cfg *ImageSwapConfig, _ context.Context, _ *kwhmodel.Admissi
 		return &kwhmutating.MutatorResult{}, nil
 	}
 
-	fmt.Println(pod)
+	fmt.Println(cfg)
 
 	// Mutate our object with the required annotations.
 

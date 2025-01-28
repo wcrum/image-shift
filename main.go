@@ -61,7 +61,6 @@ func injectCertInMWC() {
 	}
 
 	fmt.Println("Completed!")
-
 }
 
 func startWebhook() {
@@ -76,6 +75,7 @@ func startWebhook() {
 	fmt.Println(imageSwapCfg)
 
 	// Create our mutator
+
 	mt := kwhmutating.MutatorFunc(func(ctx context.Context, ar *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
 		return swapPodMutator(imageSwapCfg, ctx, ar, obj)
 	})

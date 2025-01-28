@@ -1,0 +1,25 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: imageshift-webhook
+  namespace: {{.Values.namespace}}
+  labels:
+    app: imageshift-webhook
+    kind: mutator
+webhooks:
+- name: imageshift-webhook.wcrum.dev
+  sideEffects: None
+  admissionReviewVersions: ["v1"]
+  clientConfig:
+    service:
+      name: imageshift-webhook-service
+      namespace: {{.Values.namespace}}
+      path: "/mutate"
+  rules:
+  - operations: [ "CREATE" ]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  matchConditions:
+  - name: "exclude-imageswap"
+    expression: '!(request.namespace == "{{.Values.namespace}}")'

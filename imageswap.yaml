@@ -1,0 +1,26 @@
+imageswap:
+  # 'default' specifies the default registry to use for swapping if no other mappings match.
+  default: repo1.cloudpnw.local:8080/my-base-content
+
+  mappings:
+    swap:
+    # 'swap' contains registry-level swap rules.
+    # If an image originates from the specified 'registry', it will be swapped with the defined 'target'.
+    - registry: gcr.io
+      target: registry.localhost.io:8080
+
+    # 'exact-swap' specifies rules for swapping specific images.
+    # Matches an exact image reference and swaps it with the defined target image.
+    exact-swap:
+    - image: gcr.io/test/image:latest
+      target: registry.localhost.io/newname/image:latest
+
+    # 'regex-swap' enables swapping image references based on regular expressions.
+    # Allows for flexible pattern matching and substitution.
+    regex-swap:
+    - expression: test\.com\/my-custom-([a-zA-Z]*)
+      target: registry.com/proxy-$1
+
+    # legacy-swap:
+    # - "docker.io::registry.localhost.io"
+    # TODO Support 'legacy' swapping configs found here - https://github.com/phenixblue/imageswap-webhook

@@ -2,7 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+config: |-
+  imageswap:
+    default: registry.localhost.io:8080
+
+    mappings:
+      swap:
+      - registry: gcr.io
+        target: registry.localhost.io:8080
+
 image:
   repository: wcrum/imageshift
   # This sets the pull policy for images.
@@ -10,8 +18,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-# This is to override the chart name.
-nameOverride: ""
-fullnameOverride: ""
-
 namespace: "imageshift"
+
+
+# Option to specify an existing TLS secret for the certificate
+tls:
+  selfSigned: true # required certmanager
+  secretName: imageshift-tls

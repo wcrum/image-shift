@@ -1,8 +1,8 @@
 # ImageShift Webhook
 
-![meme](./images/imageswap-meme.jpg)
+![meme](./public/imageswap-meme.jpg)
 
-[![Docker Image Size](https://badgen.net/docker/size/wcrum/webhook/latest/arm64?icon=docker&label=Image%20Size)](https://hub.docker.com/r/wcrum/webhook/)
+[![Docker Image Size](https://badgen.net/docker/size/wcrum/imageshift/latest/arm64?icon=docker&label=Image%20Size)](https://hub.docker.com/r/wcrum/webhook/)
 
 There is a trend within airgapped environments administrators have to manually tag / re-tag images to allow their cluster to pull from a local registry.
 
@@ -18,7 +18,7 @@ ImageShift is a Kubernetes MutatingWebhook, the MutatingWebhook patches requests
 
 What this means for you? Dont change your manifests, helm charts or refernces, keep them the same across the board. As you move your images from one domain to another, you dont have to worry about the manifests.
 
-![arch](./images/image.png)
+![arch](./public/image.png)
 
 
 ## Stuff to do

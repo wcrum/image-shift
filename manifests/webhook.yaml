@@ -51,7 +51,7 @@ spec:
       volumes:
         - name: webhook-certs
           secret:
-            secretName: example-com-tls
+            secretName: image-shift-tls
         - name: imageswap-config
           configMap:
             name: imageswap-config

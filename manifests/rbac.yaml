@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: imageshift-init-mwc-role
+rules:
+- apiGroups: ["admissionregistration.k8s.io", ""]
+  resources: ["mutatingwebhookconfigurations"]
+  verbs: ["get", "create", "update", "patch", "delete", "list"] 
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: imageshift-init-sa
+  namespace: sandbox
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: imageshift-init-mwc-access
+subjects:
+- kind: ServiceAccount
+  name: imageshift-init-sa
+  namespace: sandbox
+roleRef:
+  kind: ClusterRole 
+  name: imageshift-init-mwc-role
+  apiGroup: rbac.authorization.k8s.io

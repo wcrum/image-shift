@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -21,11 +22,15 @@ import (
 )
 
 func injectCertInMWC() {
+	logrusLogEntry := logrus.NewEntry(logrus.New())
+	logrusLogEntry.Logger.SetLevel(logrus.DebugLevel)
+	logger := kwhlogrus.NewLogrus(logrusLogEntry)
+
 	// creates the in-cluster config
 
 	certFile := os.Getenv("TLS_CERT_FILE")
 
-	fmt.Printf("Injecting Certificate!")
+	logger.Infof("imageshift-init injecting certificate into MutatingWebhookConfiguration imageshift-webhook.")
 
 	crt, err := os.ReadFile(certFile)
 	if err != nil {
@@ -59,8 +64,7 @@ func injectCertInMWC() {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("Completed!")
+	logger.Infof("imageshift-init finished.")
 }
 
 func startWebhook() {
@@ -72,12 +76,13 @@ func startWebhook() {
 
 	imageSwapCfg := initConfig()
 
-	fmt.Println(imageSwapCfg)
+	cfgStr, _ := yaml.Marshal(imageSwapCfg)
+	logger.Infof("MutatingWebhook Configuration\n%s", string(cfgStr))
 
 	// Create our mutator
 
 	mt := kwhmutating.MutatorFunc(func(ctx context.Context, ar *kwhmodel.AdmissionReview, obj metav1.Object) (*kwhmutating.MutatorResult, error) {
-		return swapPodMutator(imageSwapCfg, ctx, ar, obj)
+		return swapPodMutator(imageSwapCfg, ctx, ar, obj, logger)
 	})
 
 	mcfg := kwhmutating.WebhookConfig{
@@ -88,19 +93,19 @@ func startWebhook() {
 	}
 	wh, err := kwhmutating.NewWebhook(mcfg)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error creating webhook: %s", err)
+		logger.Errorf("error creating webhook: %s", err)
 		os.Exit(1)
 	}
 
 	// Get the handler for our webhook.
 	whHandler, err := kwhhttp.HandlerFor(kwhhttp.HandlerConfig{Webhook: wh, Logger: logger})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error creating webhook handler: %s", err)
+		logger.Errorf("error creating webhook handler: %s", err)
 	}
-	logger.Infof("Listening on :8080")
+	logger.Infof("Webhook Listening on :8080")
 	err = http.ListenAndServeTLS(":8080", cfg.certFile, cfg.keyFile, whHandler)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error serving webhook: %s", err)
+		logger.Errorf("error serving webhook: %s", err)
 	}
 }
 
